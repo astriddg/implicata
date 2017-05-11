@@ -79,7 +79,7 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.Unmarshal(body, &d); err != nil {
 		log.Printf("error unmarshalling JSON request body: %v", err)
-		w.WriteHeader(http.StatusUnprocessableEntity)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 

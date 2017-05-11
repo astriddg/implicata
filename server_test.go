@@ -59,7 +59,7 @@ func TestSubmitHandler(t *testing.T) {
 	testTable["TestJSONUnmarshalError"] = fixture{
 		body:       ioutil.NopCloser(bytes.NewBufferString("invalid JSON")),
 		httpMethod: http.MethodPost,
-		statusCode: http.StatusUnprocessableEntity,
+		statusCode: http.StatusBadRequest,
 	}
 	testTable["TestSuccessfulSubmit"] = fixture{
 		body:       ioutil.NopCloser(bytes.NewBufferString(`{"website_url":"lol","session_id":"1234","form_completion_time":76,"resize_from":{"width":"200","height":"250"},"resize_to":{"width":"100","height":"150"}}`)),
