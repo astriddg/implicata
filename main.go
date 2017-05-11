@@ -10,7 +10,7 @@ import (
 var httpPort uint
 
 func init() {
-	// configure optional server port
+	// configure optional HTTP server port
 	flag.UintVar(&httpPort, "http", 8080, "Port number of HTTP server")
 	flag.Parse()
 }
