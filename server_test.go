@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"io/ioutil"
@@ -32,6 +33,11 @@ func TestSubmitHandler(t *testing.T) {
 		body:       ioutil.NopCloser(mockReader{}),
 		httpMethod: http.MethodPost,
 		statusCode: http.StatusInternalServerError,
+	}
+	testTable["TestJSONUnmarshalError"] = fixture{
+		body:       ioutil.NopCloser(bytes.NewBufferString("invalid JSON")),
+		httpMethod: http.MethodPost,
+		statusCode: http.StatusUnprocessableEntity,
 	}
 
 	for name, test := range testTable {
