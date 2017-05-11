@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -8,13 +9,19 @@ import (
 	"net/http"
 )
 
-// fieldID ...
+// fieldID is the HTML ID of given dom element.
 type fieldID string
 
-// copyAndPaste ...
+// copyAndPaste contains a list of copy and pasted HTML elements.
 type copyAndPaste map[fieldID]bool
 
-// data ...
+// dimension contains the width/height of a screen size.
+type dimension struct {
+	Width  string `json:"width"`
+	Height string `json:"height"`
+}
+
+// data contains the data of each HTTP request.
 type data struct {
 	WebsiteURL         string       `json:"website_url"`
 	SessionID          string       `json:"session_id"`
@@ -24,13 +31,36 @@ type data struct {
 	FormCompletionTime int          `json:"form_completion_time"`
 }
 
-// dimension ...
-type dimension struct {
-	Width  string `json:"width"`
-	Height string `json:"height"`
+// String formats data in a readable output.
+func (d data) String() string {
+	var b bytes.Buffer
+	if d.WebsiteURL != "" {
+		b.WriteString(fmt.Sprintf("WebsiteURL: %s\n", d.WebsiteURL))
+	}
+	if d.SessionID != "" {
+		b.WriteString(fmt.Sprintf("SessionID: %s\n", d.SessionID))
+	}
+	if d.ResizeFrom.Width != "" && d.ResizeFrom.Height != "" {
+		b.WriteString(fmt.Sprintf("ResizeFrom: %sx%s\n", d.ResizeFrom.Width, d.ResizeFrom.Height))
+	}
+	if d.ResizeTo.Width != "" && d.ResizeTo.Height != "" {
+		b.WriteString(fmt.Sprintf("ResizeTo: %sx%s\n", d.ResizeTo.Width, d.ResizeTo.Height))
+	}
+	if len(d.CopyAndPaste) > 0 {
+		var cp bytes.Buffer
+		cp.WriteString("CopyAndPaste: ")
+		for key, val := range d.CopyAndPaste {
+			cp.WriteString(fmt.Sprintf("#%s=%t;", key, val))
+		}
+		b.WriteString(fmt.Sprintf("%s\n", cp.String()))
+	}
+	if d.FormCompletionTime != 0 {
+		b.WriteString(fmt.Sprintf("FormCompletionTime: %ds\n", d.FormCompletionTime))
+	}
+	return b.String()
 }
 
-// submitHandler ...
+// submitHandler handles HTTP requests for saving data.
 func submitHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)

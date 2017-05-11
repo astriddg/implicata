@@ -22,6 +22,28 @@ type fixture struct {
 	statusCode int
 }
 
+func TestStringMethod(t *testing.T) {
+	expected := "WebsiteURL: https://www.ravelin.com/\nSessionID: 123456\nResizeFrom: 200x200\nResizeTo: 100x100\nCopyAndPaste: #div1=true;#div2=false;\nFormCompletionTime: 10s\n"
+	d := data{
+		WebsiteURL: "https://www.ravelin.com/",
+		SessionID:  "123456",
+		ResizeFrom: dimension{
+			Width:  "200",
+			Height: "200",
+		},
+		ResizeTo: dimension{
+			Width:  "100",
+			Height: "100",
+		},
+		CopyAndPaste:       copyAndPaste{"div1": true, "div2": false},
+		FormCompletionTime: 10,
+	}
+
+	if d.String() != expected {
+		t.Errorf("expected output: %s, got: %s", expected, d.String())
+	}
+}
+
 func TestSubmitHandler(t *testing.T) {
 	testTable := make(map[string]fixture)
 	testTable["TestIncorrectMethodError"] = fixture{
