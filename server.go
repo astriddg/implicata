@@ -52,5 +52,7 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
+
 	fmt.Println(d)
+	w.WriteHeader(http.StatusNoContent)
 }
