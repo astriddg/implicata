@@ -5,9 +5,9 @@
 	var startTime
 	var resized = false
 
-	var constants = {
+	var opts = {
 		website_url: window.location.href,
-		session_id: guid(),
+		session_id: guid()
 	}
 
 	function guid() {
@@ -62,10 +62,11 @@
 			form_completion_time: elapsed
 		}
 		post(data)
+		opts.session_id = guid()
 	}
 
 	function post(data) {
-		var body = Object.assign({}, data, constants)
+		var body = Object.assign({}, data, opts)
 		fetch('http://localhost:8080/submit', {
 			method: 'POST',
 			body: JSON.stringify(body)

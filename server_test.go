@@ -20,10 +20,11 @@ type fixture struct {
 	body       io.Reader
 	httpMethod string
 	statusCode int
+	ctx        bool
 }
 
 func TestStringMethod(t *testing.T) {
-	expected := "WebsiteURL: https://www.ravelin.com/\nSessionID: 123456\nResizeFrom: 200x200\nResizeTo: 100x100\nCopyAndPaste: #div1=true;#div2=false;\nFormCompletionTime: 10s\n"
+	expected := "WebsiteURL: https://www.ravelin.com/\nSessionID: 123456\nResizeFrom: 200x200\nResizeTo: 100x100\nCopyAndPaste: #div1=true;\nFormCompletionTime: 10s\n"
 	d := data{
 		WebsiteURL: "https://www.ravelin.com/",
 		SessionID:  "123456",
@@ -35,12 +36,13 @@ func TestStringMethod(t *testing.T) {
 			Width:  "100",
 			Height: "100",
 		},
-		CopyAndPaste:       copyAndPaste{"div1": true, "div2": false},
+		CopyAndPaste:       copyAndPaste{"div1": true},
 		FormCompletionTime: 10,
 	}
+	output := d.String()
 
-	if d.String() != expected {
-		t.Errorf("expected output: %s, got: %s", expected, d.String())
+	if output != expected {
+		t.Errorf("expected output: \n%sgot:\n%s", expected, output)
 	}
 }
 
@@ -69,11 +71,15 @@ func TestSubmitHandler(t *testing.T) {
 
 	for name, test := range testTable {
 		t.Run(name, func(t *testing.T) {
-			handler := http.HandlerFunc(submitHandler)
+			stream := make(chan data, 1)
+			defer close(stream)
+
+			handler := submitHandler(stream)
 			req, err := http.NewRequest(test.httpMethod, "/submit", test.body)
 			if err != nil {
 				t.Fatal(err)
 			}
+
 			rec := httptest.NewRecorder()
 			handler.ServeHTTP(rec, req)
 

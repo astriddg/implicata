@@ -4,4 +4,4 @@ build:
 	go build -o $(NAME)
 
 test:
-	go test ./... -cover
+	go test ./... -cover -race
