@@ -7,7 +7,7 @@ func TestSaveDataStore(t *testing.T) {
 	url := "http://www.ravelin.com/"
 
 	store := make(dataStore)
-	req := data{
+	req := request{
 		WebsiteURL:   url,
 		SessionID:    session,
 		CopyAndPaste: make(copyAndPaste),

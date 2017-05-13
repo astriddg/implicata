@@ -3,10 +3,10 @@ package main
 import "fmt"
 
 // dataStore stores the state of each unique request.
-type dataStore map[sessionID]*data
+type dataStore map[sessionID]*request
 
 // process receives data from a stream and saves it to a data store.
-func process(stream chan data) {
+func process(stream chan request) {
 	store := make(dataStore)
 	for {
 		req := <-stream
@@ -15,26 +15,29 @@ func process(stream chan data) {
 }
 
 // save updates a unique data set in a given data store.
-func save(req data, store dataStore) {
+func save(req request, store dataStore) {
 	session := req.SessionID
-	if _, ok := store[session]; !ok {
+	data, ok := store[session]
+	if !ok {
 		store[session] = &req
+		fmt.Println(&req)
+		return
 	}
-	store[session].WebsiteURL = req.WebsiteURL
-	store[session].SessionID = req.SessionID
+	data.WebsiteURL = req.WebsiteURL
+	data.SessionID = req.SessionID
 	if req.ResizeFrom.Height != "" && req.ResizeFrom.Width != "" {
-		store[session].ResizeFrom = req.ResizeFrom
+		data.ResizeFrom = req.ResizeFrom
 	}
 	if req.ResizeTo.Height != "" && req.ResizeTo.Width != "" {
-		store[session].ResizeTo = req.ResizeTo
+		data.ResizeTo = req.ResizeTo
 	}
 	if len(req.CopyAndPaste) > 0 {
 		for k, v := range req.CopyAndPaste {
-			store[session].CopyAndPaste[k] = v
+			data.CopyAndPaste[k] = v
 		}
 	}
 	if req.FormCompletionTime > 0 {
-		store[session].FormCompletionTime = req.FormCompletionTime
+		data.FormCompletionTime = req.FormCompletionTime
 	}
-	fmt.Println(store[session])
+	fmt.Println(data)
 }

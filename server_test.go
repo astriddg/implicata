@@ -27,7 +27,7 @@ type fixture struct {
 
 func TestStringMethod(t *testing.T) {
 	expected := "WebsiteURL: https://www.ravelin.com/\nSessionID: 123456\nResizeFrom: 200x200\nResizeTo: 100x100\nCopyAndPaste: #div1=true;\nFormCompletionTime: 10s\n"
-	d := data{
+	req := request{
 		WebsiteURL: "https://www.ravelin.com/",
 		SessionID:  "123456",
 		ResizeFrom: dimension{
@@ -41,7 +41,7 @@ func TestStringMethod(t *testing.T) {
 		CopyAndPaste:       copyAndPaste{"div1": true},
 		FormCompletionTime: 10,
 	}
-	output := d.String()
+	output := req.String()
 
 	if output != expected {
 		t.Errorf("expected output: \n%sgot:\n%s", expected, output)
@@ -79,7 +79,7 @@ func TestSubmitHandler(t *testing.T) {
 
 	for name, test := range testTable {
 		t.Run(name, func(t *testing.T) {
-			stream := make(chan data, 1)
+			stream := make(chan request, 1)
 			defer close(stream)
 
 			handler := submitHandler(stream)
@@ -88,7 +88,7 @@ func TestSubmitHandler(t *testing.T) {
 				t.Fatal(err)
 			}
 			if test.ctx {
-				stream <- data{}
+				stream <- request{}
 				ctx, cancel := context.WithDeadline(req.Context(), time.Now().Add(-5*time.Second))
 				cancel()
 				req = req.WithContext(ctx)

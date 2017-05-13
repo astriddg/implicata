@@ -26,8 +26,8 @@ type dimension struct {
 	Height string `json:"height"`
 }
 
-// data contains the data of each HTTP request.
-type data struct {
+// request contains the data of each HTTP request.
+type request struct {
 	WebsiteURL         string       `json:"website_url"`
 	SessionID          sessionID    `json:"session_id"`
 	ResizeFrom         dimension    `json:"resize_from"`
@@ -37,36 +37,36 @@ type data struct {
 }
 
 // String formats data in a readable output.
-func (d data) String() string {
+func (req request) String() string {
 	var b bytes.Buffer
-	if d.WebsiteURL != "" {
-		b.WriteString(fmt.Sprintf("WebsiteURL: %s\n", d.WebsiteURL))
+	if req.WebsiteURL != "" {
+		b.WriteString(fmt.Sprintf("WebsiteURL: %s\n", req.WebsiteURL))
 	}
-	if d.SessionID != "" {
-		b.WriteString(fmt.Sprintf("SessionID: %s\n", d.SessionID))
+	if req.SessionID != "" {
+		b.WriteString(fmt.Sprintf("SessionID: %s\n", req.SessionID))
 	}
-	if d.ResizeFrom.Width != "" && d.ResizeFrom.Height != "" {
-		b.WriteString(fmt.Sprintf("ResizeFrom: %sx%s\n", d.ResizeFrom.Width, d.ResizeFrom.Height))
+	if req.ResizeFrom.Width != "" && req.ResizeFrom.Height != "" {
+		b.WriteString(fmt.Sprintf("ResizeFrom: %sx%s\n", req.ResizeFrom.Width, req.ResizeFrom.Height))
 	}
-	if d.ResizeTo.Width != "" && d.ResizeTo.Height != "" {
-		b.WriteString(fmt.Sprintf("ResizeTo: %sx%s\n", d.ResizeTo.Width, d.ResizeTo.Height))
+	if req.ResizeTo.Width != "" && req.ResizeTo.Height != "" {
+		b.WriteString(fmt.Sprintf("ResizeTo: %sx%s\n", req.ResizeTo.Width, req.ResizeTo.Height))
 	}
-	if len(d.CopyAndPaste) > 0 {
+	if len(req.CopyAndPaste) > 0 {
 		var cp bytes.Buffer
 		cp.WriteString("CopyAndPaste: ")
-		for key, val := range d.CopyAndPaste {
+		for key, val := range req.CopyAndPaste {
 			cp.WriteString(fmt.Sprintf("#%s=%t;", key, val))
 		}
 		b.WriteString(fmt.Sprintf("%s\n", cp.String()))
 	}
-	if d.FormCompletionTime != 0 {
-		b.WriteString(fmt.Sprintf("FormCompletionTime: %ds\n", d.FormCompletionTime))
+	if req.FormCompletionTime != 0 {
+		b.WriteString(fmt.Sprintf("FormCompletionTime: %ds\n", req.FormCompletionTime))
 	}
 	return b.String()
 }
 
 // submitHandler handles HTTP requests for saving data.
-func submitHandler(stream chan data) http.HandlerFunc {
+func submitHandler(stream chan request) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			w.WriteHeader(http.StatusMethodNotAllowed)
@@ -83,7 +83,7 @@ func submitHandler(stream chan data) http.HandlerFunc {
 			return
 		}
 
-		req := data{
+		req := request{
 			CopyAndPaste: make(copyAndPaste),
 		}
 		if err := json.Unmarshal(body, &req); err != nil {

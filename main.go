@@ -7,7 +7,7 @@ import (
 
 func main() {
 	// create request stream.
-	stream := make(chan data)
+	stream := make(chan request)
 	// proccess stream data.
 	go process(stream)
 
