@@ -23,8 +23,6 @@ func save(req request, store dataStore) {
 		fmt.Println(&req)
 		return
 	}
-	data.WebsiteURL = req.WebsiteURL
-	data.SessionID = req.SessionID
 	if req.ResizeFrom.Height != "" && req.ResizeFrom.Width != "" {
 		data.ResizeFrom = req.ResizeFrom
 	}
