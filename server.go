@@ -12,9 +12,9 @@ import (
 )
 
 type (
-	// fieldID is the HTML ID of given dom element.
+	// fieldID is the unique ID of given HTML element.
 	fieldID string
-	// copyAndPaste contains a list of copy and pasted HTML elements.
+	// copyAndPaste contains a list of copy and pasted HTML element IDs.
 	copyAndPaste map[fieldID]bool
 	//sessionID is the UUID of a unique session.
 	sessionID string

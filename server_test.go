@@ -89,7 +89,7 @@ func TestSubmitHandler(t *testing.T) {
 			}
 			if test.ctx {
 				stream <- data{}
-				ctx, cancel := context.WithDeadline(req.Context(), time.Now().Add(-7*time.Hour))
+				ctx, cancel := context.WithDeadline(req.Context(), time.Now().Add(-5*time.Second))
 				cancel()
 				req = req.WithContext(ctx)
 			}
