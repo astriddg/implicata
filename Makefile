@@ -1,7 +1,7 @@
 NAME = implicata
 
 build:
-	go build -o $(NAME)
+	go build -race -o $(NAME)
 
 run: build
 	./$(NAME)

@@ -2,12 +2,14 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 type mockReader struct{}
@@ -68,6 +70,12 @@ func TestSubmitHandler(t *testing.T) {
 		httpMethod: http.MethodPost,
 		statusCode: http.StatusNoContent,
 	}
+	testTable["TestContextDone"] = fixture{
+		body:       ioutil.NopCloser(bytes.NewBufferString(`{}`)),
+		httpMethod: http.MethodPost,
+		statusCode: http.StatusRequestTimeout,
+		ctx:        true,
+	}
 
 	for name, test := range testTable {
 		t.Run(name, func(t *testing.T) {
@@ -78,6 +86,12 @@ func TestSubmitHandler(t *testing.T) {
 			req, err := http.NewRequest(test.httpMethod, "/submit", test.body)
 			if err != nil {
 				t.Fatal(err)
+			}
+			if test.ctx {
+				stream <- data{}
+				ctx, cancel := context.WithDeadline(req.Context(), time.Now().Add(-7*time.Hour))
+				cancel()
+				req = req.WithContext(ctx)
 			}
 
 			rec := httptest.NewRecorder()
