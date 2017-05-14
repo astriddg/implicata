@@ -52,6 +52,6 @@ func TestSaveDataStore(t *testing.T) {
 	save(req, store)
 
 	if store[session].FormCompletionTime != 10 {
-		t.Error("expected FormCompletionTime: 10, got: %d", store[session].FormCompletionTime)
+		t.Errorf("expected FormCompletionTime: 10, got: %d", store[session].FormCompletionTime)
 	}
 }
