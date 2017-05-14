@@ -81,7 +81,9 @@ func TestSubmitHandler(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			stream := make(chan request, 1)
 			defer close(stream)
-			go process(stream)
+			if !test.ctx {
+				go process(stream)
+			}
 
 			handler := submitHandler(stream)
 			req, err := http.NewRequest(test.httpMethod, "/submit", test.body)

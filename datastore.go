@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 // dataStore stores the state of each unique request.
 type dataStore map[sessionID]*request
 
@@ -20,7 +18,7 @@ func save(req request, store dataStore) {
 	data, ok := store[session]
 	if !ok {
 		store[session] = &req
-		fmt.Println(&req)
+		logger.Println(&req)
 		return
 	}
 	if req.ResizeFrom.Height != "" && req.ResizeFrom.Width != "" {
@@ -37,5 +35,5 @@ func save(req request, store dataStore) {
 	if req.FormCompletionTime > 0 {
 		data.FormCompletionTime = req.FormCompletionTime
 	}
-	fmt.Println(data)
+	logger.Println(data)
 }
